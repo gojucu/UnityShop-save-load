@@ -39,20 +39,52 @@ public class Shop : MonoBehaviour
 
 	void Start ()
 	{
-		int len = itemDB.ItemsCount ;
-		for (int i = 0; i < len; i++) {
-            ShopItem item = itemDB.GetShopItem(i);
-
-			g = Instantiate (ItemTemplate, ShopScrollView);
-			g.transform.GetChild (0).GetComponent <Image> ().sprite = item.image;
-			g.transform.GetChild (1).GetChild (0).GetComponent <Text> ().text = item.price.ToString ();
-			buyBtn = g.transform.GetChild (2).GetComponent <Button> ();
-			if (item.isPurchased) {
-				DisableBuyButton ();
+		ListShopItems(0);
+		//int len = itemDB.ItemsCount ;
+		//for (int i = 0; i < len; i++) {
+		//          ShopItem item = itemDB.GetShopItem(i);
+		//          if (item.category == "1")
+		//          {
+		//		g = Instantiate(ItemTemplate, ShopScrollView);
+		//		g.transform.GetChild(0).GetComponent<Image>().sprite = item.image;
+		//		g.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.price.ToString();
+		//		buyBtn = g.transform.GetChild(2).GetComponent<Button>();
+		//		if (item.isPurchased)
+		//		{
+		//			DisableBuyButton();
+		//		}
+		//		buyBtn.AddEventListener(i, OnShopItemBtnClicked);
+		//	}
+		//}
+	}
+	public void ListShopItems(int index)
+    {
+		ResetShopList();
+		int len = itemDB.ItemsCount;
+		for (int i = 0; i < len; i++)
+		{
+			ShopItem item = itemDB.GetShopItem(i);
+			if (item.category == index.ToString())
+			{
+				g = Instantiate(ItemTemplate, ShopScrollView);
+				g.transform.GetChild(0).GetComponent<Image>().sprite = item.image;
+				g.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.price.ToString();
+				buyBtn = g.transform.GetChild(2).GetComponent<Button>();
+				if (item.isPurchased)
+				{
+					DisableBuyButton();
+				}
+				buyBtn.AddEventListener(i, OnShopItemBtnClicked);
 			}
-			buyBtn.AddEventListener (i, OnShopItemBtnClicked);
 		}
 	}
+	void ResetShopList()
+    {
+		foreach(Transform child in ShopScrollView)
+        {
+            Destroy(child.gameObject);
+		}
+    }
 
 	void OnShopItemBtnClicked (int itemIndex)
 	{
@@ -88,7 +120,7 @@ public class Shop : MonoBehaviour
 		buyBtn.interactable = false;
 		buyBtn.transform.GetChild (0).GetComponent <Text> ().text = "PURCHASED";
 	}
-	/*---------------------Open & Close shop--------------------------*/
+	/*---------------------Open & Close shop--------------------------*/ 
 	public void OpenShop ()
 	{
 		ShopPanel.SetActive (true);
