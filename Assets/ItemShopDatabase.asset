@@ -13,13 +13,13 @@ MonoBehaviour:
   m_Name: ItemShopDatabase
   m_EditorClassIdentifier: 
   items:
-  - category: 
-    image: {fileID: 0}
-    name: 
-    price: 0
+  - category: 1
+    image: {fileID: 21300002, guid: aad717d31715b6e46a17d6fbf28455ac, type: 3}
+    name: char1
+    price: 500
     isPurchased: 0
-  - category: 
-    image: {fileID: 0}
-    name: 
-    price: 0
+  - category: 1
+    image: {fileID: 21300004, guid: aad717d31715b6e46a17d6fbf28455ac, type: 3}
+    name: char2
+    price: 750
     isPurchased: 0

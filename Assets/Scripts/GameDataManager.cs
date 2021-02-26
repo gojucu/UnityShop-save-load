@@ -13,7 +13,7 @@ public class CharactersShopData
 [System.Serializable]
 public class PlayerData
 {
-    public int coins = 0;
+    public int coins = 1000;
     public int selectedCharacterIndex = 0;
 }
 

@@ -38,21 +38,21 @@ public class Profile : MonoBehaviour
 
 	void Start ()
 	{
-		GetAvailableAvatars ();
+		//GetAvailableAvatars ();
 		newSelectedIndex = previousSelectedIndex = 0;
 	}
 
-	void GetAvailableAvatars ()
-	{
-		for (int i = 0; i < Shop.Instance.ShopItemsList.Count; i++) {
-			if (Shop.Instance.ShopItemsList [i].IsPurchased) {
-				//add all purchased avatars to AvatarsList
-				AddAvatar (Shop.Instance.ShopItemsList [i].Image);
-			}
-		}
+	//void GetAvailableAvatars ()
+	//{
+	//	for (int i = 0; i < Shop.Instance.ShopItemsList.Count; i++) {
+	//		if (Shop.Instance.ShopItemsList [i].IsPurchased) {
+	//			//add all purchased avatars to AvatarsList
+	//			AddAvatar (Shop.Instance.ShopItemsList [i].Image);
+	//		}
+	//	}
 
-		SelectAvatar (newSelectedIndex);
-	}
+	//	SelectAvatar (newSelectedIndex);
+	//}
 
 	public void AddAvatar (Sprite img)
 	{

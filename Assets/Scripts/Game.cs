@@ -40,8 +40,9 @@ public class Game : MonoBehaviour
 
 	public void UpdateAllCoinsUIText ()
 	{
+		int deneme = GameDataManager.GetCoins();
 		for (int i = 0; i < allCoinsUIText.Length; i++) {
-			allCoinsUIText [i].text = Coins.ToString ();
+			allCoinsUIText [i].text = deneme.ToString ();
 		}
 	}
 

@@ -18,14 +18,16 @@ public class Shop : MonoBehaviour
 
 	#endregion
 
-	[System.Serializable] public class ShopItem
-	{
-		public Sprite Image;
-		public int Price;
-		public bool IsPurchased = false;
-	}
+	//[System.Serializable] public class ShopItem
+	//{
+	//	public Sprite Image;
+	//	public int Price;
+	//	public bool IsPurchased = false;
+	//}
 
 	public List<ShopItem> ShopItemsList;
+	[SerializeField] ShopItemDatabase itemDB;
+
 	[SerializeField] Animator NoCoinsAnim;
  
 
@@ -37,13 +39,15 @@ public class Shop : MonoBehaviour
 
 	void Start ()
 	{
-		int len = ShopItemsList.Count;
+		int len = itemDB.ItemsCount ;
 		for (int i = 0; i < len; i++) {
+            ShopItem item = itemDB.GetShopItem(i);
+
 			g = Instantiate (ItemTemplate, ShopScrollView);
-			g.transform.GetChild (0).GetComponent <Image> ().sprite = ShopItemsList [i].Image;
-			g.transform.GetChild (1).GetChild (0).GetComponent <Text> ().text = ShopItemsList [i].Price.ToString ();
+			g.transform.GetChild (0).GetComponent <Image> ().sprite = item.image;
+			g.transform.GetChild (1).GetChild (0).GetComponent <Text> ().text = item.price.ToString ();
 			buyBtn = g.transform.GetChild (2).GetComponent <Button> ();
-			if (ShopItemsList [i].IsPurchased) {
+			if (item.isPurchased) {
 				DisableBuyButton ();
 			}
 			buyBtn.AddEventListener (i, OnShopItemBtnClicked);
@@ -52,23 +56,31 @@ public class Shop : MonoBehaviour
 
 	void OnShopItemBtnClicked (int itemIndex)
 	{
-		if (Game.Instance.HasEnoughCoins (ShopItemsList [itemIndex].Price)) {
-			Game.Instance.UseCoins (ShopItemsList [itemIndex].Price);
-			//purchase Item
-			ShopItemsList [itemIndex].IsPurchased = true;
+		ShopItem item = itemDB.GetShopItem(itemIndex);
+        if (GameDataManager.CanSpendCoins(item.price))
+        {
+			//Proceed with the purchase operation
+			GameDataManager.SpendCoins(item.price);
+
+			//Update DB's Data
+			itemDB.PurchaseItem(itemIndex);
+
+			//Add purchased item to Shop Data
+			GameDataManager.AddPurchasedCharacter(itemIndex);
+
 
 			//disable the button
-			buyBtn = ShopScrollView.GetChild (itemIndex).GetChild (2).GetComponent <Button> ();
-			DisableBuyButton ();
+			buyBtn = ShopScrollView.GetChild(itemIndex).GetChild(2).GetComponent<Button>();
+			DisableBuyButton();
 			//change UI text: coins
-			Game.Instance.UpdateAllCoinsUIText ();
-
-			//add avatar
-			Profile.Instance.AddAvatar (ShopItemsList [itemIndex].Image);
-		} else {
-			NoCoinsAnim.SetTrigger ("NoCoins");
-			Debug.Log ("You don't have enough coins!!");
+			Game.Instance.UpdateAllCoinsUIText();
 		}
+        else
+        {
+			NoCoinsAnim.SetTrigger("NoCoins");
+			Debug.Log("You don't have enough coins!!");
+		}
+
 	}
 
 	void DisableBuyButton ()
