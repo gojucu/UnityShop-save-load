@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class CharactersShopData
 {
     public List<int> purchasedCharactersIndexes = new List<int>();
+    public int categoryCount;
 }
 
 //Player Data Holder
@@ -14,7 +15,9 @@ public class CharactersShopData
 public class PlayerData
 {
     public int coins = 1000;
-    public int selectedCharacterIndex = 0;
+    public List<int> selectedCharacterIndex = new List<int>();
+    public ShopItem selectedTable;
+    public ShopItem selectedPlant;
 }
 
 
@@ -23,30 +26,37 @@ public static class GameDataManager
     static PlayerData playerData = new PlayerData();
     static CharactersShopData charactersShopData = new CharactersShopData();
 
-    static ShopItem selectedItem;// Seçili malzemeler bunlar gibi olucak Çiçek,masa
-
+    static List<ShopItem> selectedItem = new List<ShopItem>();// Seçili malzemeler bunlar gibi olucak Çiçek,masa
+    //static ShopItemDatabase itemDB;
     static GameDataManager()
     {
+        for(int i =0; i < 2; i++)
+        {
+            playerData.selectedCharacterIndex.Insert(i, 0);
+        }
         //LoadPlayerData();
         //LoadCharactersShopData();
     }
 
     //Player Data Methods -----------------------------------------------------------------------------
-    public static ShopItem GetSelectedCharacter()
+    public static ShopItem GetSelectedItems()
     {
-        return selectedItem;
+        return selectedItem[0];//0?
     }
      
-    public static void SetSelectedCharacter(ShopItem item, int index)
+    public static void SetSelectedItem(ShopItem item, int index)
     {
-        selectedItem = item;
-        playerData.selectedCharacterIndex = index;
+        //ItemCategories cat = item.category; int yap
+        
+        selectedItem.Add(item);
+
+        playerData.selectedCharacterIndex.Insert(item.categoryID,index);
         //SavePlayerData();
     }
 
-    public static int GetSelectedCharacterIndex()
+    public static int GetSelectedItemsIndex(int i)
     {
-        return playerData.selectedCharacterIndex;
+        return playerData.selectedCharacterIndex[i];
     }
 
     public static int GetCoins()

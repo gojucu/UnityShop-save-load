@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
+using System;
 
 public class Shop : MonoBehaviour
 {
@@ -25,7 +26,9 @@ public class Shop : MonoBehaviour
 	//	public bool IsPurchased = false;
 	//}
 
-	public List<ShopItem> ShopItemsList;
+	//[SerializeField] Transform ShopItemsContainer;
+
+	//public List<ShopItem> ShopItemsList;//Silinicek ?
 	[SerializeField] ShopItemDatabase itemDB;
 
 	[SerializeField] Animator NoCoinsAnim;
@@ -35,27 +38,32 @@ public class Shop : MonoBehaviour
 	GameObject g;
 	[SerializeField] Transform ShopScrollView;
 	[SerializeField] GameObject ShopPanel;
-	Button buyBtn;
+	//Silinicek ?1
+	//Button buyBtn;
+	//Button itemBtn;
+	//Outline itemOutline;
+	//1
+	int newSelectedItemIndex = 0;
+	int previousSelectedItemIndex = 0;
 
 	void Start ()
 	{
+		//Fill the shop's UI list with items
 		ListShopItems(0);
-		//int len = itemDB.ItemsCount ;
-		//for (int i = 0; i < len; i++) {
-		//          ShopItem item = itemDB.GetShopItem(i);
-		//          if (item.category == "1")
-		//          {
-		//		g = Instantiate(ItemTemplate, ShopScrollView);
-		//		g.transform.GetChild(0).GetComponent<Image>().sprite = item.image;
-		//		g.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.price.ToString();
-		//		buyBtn = g.transform.GetChild(2).GetComponent<Button>();
-		//		if (item.isPurchased)
-		//		{
-		//			DisableBuyButton();
-		//		}
-		//		buyBtn.AddEventListener(i, OnShopItemBtnClicked);
-		//	}
-		//}
+
+		//Set selected character in the playerDataManager .
+	
+
+		//Select UI item
+		for (int i = 0; i < itemDB.CategorisCount; i++)
+		{
+			int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(i);
+			SetSelectedItems(categoriesSelectedItem);
+			SelectItemUI(categoriesSelectedItem);
+		}
+		//SelectItemUI(GameDataManager.GetSelectedItemsIndex());
+
+
 	}
 	public void ListShopItems(int index)
     {
@@ -64,20 +72,71 @@ public class Shop : MonoBehaviour
 		for (int i = 0; i < len; i++)
 		{
 			ShopItem item = itemDB.GetShopItem(i);
-			if (item.category == index.ToString())
+			
+			if (item.categoryID == index)
 			{
-				g = Instantiate(ItemTemplate, ShopScrollView);
-				g.transform.GetChild(0).GetComponent<Image>().sprite = item.image;
-				g.transform.GetChild(1).GetChild(0).GetComponent<Text>().text = item.price.ToString();
-				buyBtn = g.transform.GetChild(2).GetComponent<Button>();
+				ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
+				itemUI.SetItemImage(item.image);
+				itemUI.SetItemPrice(item.price);
+
 				if (item.isPurchased)
-				{
-					DisableBuyButton();
-				}
-				buyBtn.AddEventListener(i, OnShopItemBtnClicked);
+                {
+					itemUI.SetItemAsPurchased();
+					itemUI.OnItemSelect(i, OnItemSelected);
+                }
+                else
+                {
+					itemUI.OnItemPurchase(i, OnItemPurchased);
+                }
 			}
 		}
 	}
+
+	void SetSelectedItems(int index)
+	{
+		//Get saved index
+		//int index = GameDataManager.GetSelectedItemsIndex();
+
+		//Set selected character
+		GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
+	}
+
+	void OnItemSelected(int i)
+    {
+		//Select item in the UI
+
+		SelectItemUI(i);
+
+		//Save Data
+		GameDataManager.SetSelectedItem(itemDB.GetShopItem(i), i);
+		Debug.Log("Selected"+i);
+	}
+	void SelectItemUI(int itemIndex)
+	{
+		ShopItem item = itemDB.GetShopItem(itemIndex);
+		for(int i = 0; i< itemDB.ItemsCount; i++)
+        {
+			if (item.categoryID == itemDB.items[i].categoryID)
+			{
+				ItemUI itemUIs = GetItemUI(i);
+
+				itemUIs.DeselectItem();
+			}
+		}
+
+		//previousSelectedItemIndex = newSelectedItemIndex;
+		newSelectedItemIndex = itemIndex;
+
+		//ItemUI prevUiItem = GetItemUI(previousSelectedItemIndex);
+		ItemUI newUiItem = GetItemUI(newSelectedItemIndex);
+
+		newUiItem.SelectItem();
+
+	}
+	ItemUI GetItemUI(int index)
+    {
+		return ShopScrollView.GetChild(index).GetComponent<ItemUI>();
+    }
 	void ResetShopList()
     {
 		foreach(Transform child in ShopScrollView)
@@ -86,7 +145,7 @@ public class Shop : MonoBehaviour
 		}
     }
 
-	void OnShopItemBtnClicked (int itemIndex)
+	void OnItemPurchased (int itemIndex)
 	{
 		ShopItem item = itemDB.GetShopItem(itemIndex);
         if (GameDataManager.CanSpendCoins(item.price))
@@ -100,10 +159,6 @@ public class Shop : MonoBehaviour
 			//Add purchased item to Shop Data
 			GameDataManager.AddPurchasedCharacter(itemIndex);
 
-
-			//disable the button
-			buyBtn = ShopScrollView.GetChild(itemIndex).GetChild(2).GetComponent<Button>();
-			DisableBuyButton();
 			//change UI text: coins
 			Game.Instance.UpdateAllCoinsUIText();
 		}
@@ -115,11 +170,6 @@ public class Shop : MonoBehaviour
 
 	}
 
-	void DisableBuyButton ()
-	{
-		buyBtn.interactable = false;
-		buyBtn.transform.GetChild (0).GetComponent <Text> ().text = "PURCHASED";
-	}
 	/*---------------------Open & Close shop--------------------------*/ 
 	public void OpenShop ()
 	{
