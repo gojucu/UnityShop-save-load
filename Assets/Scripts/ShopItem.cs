@@ -10,6 +10,7 @@ public struct ShopItem
     public string name;
     public int price;
 
+    public bool isDefault;
     public bool isPurchased;
 
 }

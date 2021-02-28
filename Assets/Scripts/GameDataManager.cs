@@ -8,6 +8,8 @@ public class CharactersShopData
 {
     public List<int> purchasedCharactersIndexes = new List<int>();
     public int categoryCount;
+
+    public List<int> defaultBrokensIndexes = new List<int>();
 }
 
 //Player Data Holder
@@ -17,6 +19,8 @@ public class PlayerData
     public int coins = 1000;
     public List<int> selectedCharacterIndex = new List<int>();
     public SettedItems setted;
+    
+
 }
 
 
@@ -30,10 +34,8 @@ public static class GameDataManager
     //static ShopItemDatabase itemDB;
     static GameDataManager()
     {
-        for(int i =0; i < 2; i++)
-        {
-            playerData.selectedCharacterIndex.Insert(i, 0);
-        }
+
+
         //LoadPlayerData();
         //LoadCharactersShopData();
     }
@@ -62,11 +64,24 @@ public static class GameDataManager
 
         playerData.selectedCharacterIndex.Insert(item.categoryID,index);
         //SavePlayerData();
-    }
 
+    }
+    public static void SetDefaults(ShopItem item)
+    {
+
+        charactersShopData.defaultBrokensIndexes.Insert(item.categoryID, item.itemID);
+    }
+    public static int GetDefaultValues(int i)
+    {
+        return charactersShopData.defaultBrokensIndexes[i];
+    }
     public static int GetSelectedItemsIndex(int i)
     {
         return playerData.selectedCharacterIndex[i];
+    }
+    public static int GetSelectedItemsCount()
+    {
+        return playerData.selectedCharacterIndex.Count;
     }
 
     public static int GetCoins()

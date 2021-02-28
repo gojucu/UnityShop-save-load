@@ -2,6 +2,7 @@
 using UnityEngine.UI;
 using System.Collections.Generic;
 using System;
+using System.Linq;
 
 public class Shop : MonoBehaviour
 {
@@ -35,7 +36,7 @@ public class Shop : MonoBehaviour
  
 
 	[SerializeField] GameObject ItemTemplate;
-	GameObject g;
+	//GameObject g;
 	[SerializeField] Transform ShopScrollView;
 	[SerializeField] GameObject ShopPanel;
     //Silinicek ?1
@@ -51,6 +52,8 @@ public class Shop : MonoBehaviour
 		//Fill the shop's UI list with items
 		ListShopItems(0);
 
+
+
 		//Set selected character in the playerDataManager .
 	
 
@@ -61,6 +64,7 @@ public class Shop : MonoBehaviour
 	public void ListShopItems(int index)
     {
 		ResetShopList();
+
 		int len = itemDB.ItemsCount;
 		for (int i = 0; i < len; i++)
 		{
@@ -68,6 +72,22 @@ public class Shop : MonoBehaviour
 			
 			if (item.categoryID == index)
 			{
+				if (item.isDefault == true)
+				{
+					GameDataManager.SetDefaults(item);
+					//if (GameDataManager.GetSelectedItemsCount() == 0)
+					//{
+					//	Debug.Log(GameDataManager.GetSelectedItemsCount());
+					//	int dd = GameDataManager.GetSelectedItemsIndex(index);
+					//	ShopItem sItem = itemDB.GetShopItem(dd);
+					//	if (sItem.isDefault != false)
+					//	{
+					//if(GameDataManager.GetDefaultValues(item.categoryID)!=true)
+							SetSelectedItems(item.itemID);
+					//	}
+					//}
+				}
+
 				ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
 				itemUI.SetItemImage(item.image);
 				itemUI.SetItemPrice(item.price);
@@ -84,30 +104,48 @@ public class Shop : MonoBehaviour
                 }
 			}
 		}
-
 		//Select UI item
-		for (int i = 0; i < itemDB.CategoriesCount; i++)
-		{
-			int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(i);
-			SetSelectedItems(categoriesSelectedItem);
-			SelectItemUI(categoriesSelectedItem);
-		}
+		int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(index);
+		Debug.Log(categoriesSelectedItem+"Hata burada");
+		SetSelectedItems(categoriesSelectedItem);
+		SelectItemUI(categoriesSelectedItem);
 	}
 
 	void SetSelectedItems(int index)
-	{
-		//Get saved index
-		//int index = GameDataManager.GetSelectedItemsIndex();
+    {
+        //Get saved index
+        //int index = GameDataManager.GetSelectedItemsIndex();
 
-		//Set selected character
-		GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
-	}
+        //Set selected character
+        GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
+    }
 
-	void OnItemSelected(int i)
+    private void MakeDefaultItemFalse(int index)
+    {
+        ShopItem item = itemDB.GetShopItem(index);
+        if (item.isDefault != true)
+        {
+			int len = itemDB.ItemsCount;
+			for (int i = 0; i < len; i++)
+			{
+                if (item.categoryID == i)
+				{
+					//GameDataManager.SetDefaults(item);
+					int defaultIndex=GameDataManager.GetDefaultValues(item.categoryID);
+					itemDB.BreakDefault(defaultIndex);
+					//item.isDefault = false;
+				}
+			}
+		}
+    }
+
+    void OnItemSelected(int i)
     {
 		//Select item in the UI
-
 		SelectItemUI(i);
+
+		//Remove Default
+		MakeDefaultItemFalse(i);
 
 		//Save Data
 		GameDataManager.SetSelectedItem(itemDB.GetShopItem(i), i);
@@ -115,32 +153,21 @@ public class Shop : MonoBehaviour
 	}
 	void SelectItemUI(int itemIndex)
 	{
-		ShopItem item = itemDB.GetShopItem(itemIndex);
+		//ShopItem item = itemDB.GetShopItem(itemIndex);
 		var d = FindObjectsOfType<ItemUI>();
 		foreach (ItemUI itemUI in d)
         {
-			//if (item.categoryID == i)
-			//{
-			//	ItemUI itemUIs = itemUI;
 			itemUI.DeselectItem();
-			//}
 		}
 
-		//previousSelectedItemIndex = newSelectedItemIndex;
-		//newSelectedItemIndex = itemIndex;
-
-		//ItemUI prevUiItem = GetItemUI(previousSelectedItemIndex);
-		//ItemUI newUiItem = GetItemUI(newSelectedItemIndex);
-		ItemUI newUiItem=null;
-		
-		foreach (ItemUI itemUI in d)
-		{
-			if (itemUI.GetComponent<ItemUI>().GetItemID() == itemDB.items[itemIndex].itemID)
-			{
-				newUiItem = itemUI;
-				newUiItem.SelectItem();
-			}
-		}
+        ItemUI newUiItem = null;
+        foreach (ItemUI itemUI in from ItemUI itemUI in d
+                               where itemUI.GetComponent<ItemUI>().GetItemID() == itemDB.items[itemIndex].itemID
+                               select itemUI)
+        {
+            newUiItem = itemUI;
+            newUiItem.SelectItem();
+        }
 	}
 	//ItemUI GetItemUI(int index)//Buraya item ın id ini yollamaya çalış
 	//{
@@ -166,16 +193,18 @@ public class Shop : MonoBehaviour
 			itemDB.PurchaseItem(itemIndex);
 
 			//change itemUI
-			ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin proplemi ne çöz
-			//var d = FindObjectsOfType<ItemUI>();
-			//foreach (ItemUI itemUI in d)
-			//{
-			//	itemUI.SetItemAsPurchased();
-			//	itemUI.OnItemSelect(item.itemID, OnItemSelected);
-			//}
+			//ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin proplemi ne çöz
+			var d = FindObjectsOfType<ItemUI>();
+            foreach (ItemUI itemUI in from ItemUI itemUI in d
+                                   where itemUI.GetItemID() == itemIndex
+                                   select itemUI)
+            {
+                itemUI.SetItemAsPurchased();
+                itemUI.OnItemSelect(item.itemID, OnItemSelected);
+            }
 
-			//Add purchased item to Shop Data
-			GameDataManager.AddPurchasedCharacter(itemIndex);
+            //Add purchased item to Shop Data
+            GameDataManager.AddPurchasedCharacter(itemIndex);
 
 			//change UI text: coins
 			Game.Instance.UpdateAllCoinsUIText();

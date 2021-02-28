@@ -28,4 +28,8 @@ public class ShopItemDatabase : ScriptableObject
     {
         items[index].isPurchased = true;
     }
+    public void BreakDefault(int index)
+    {
+        items[index].isDefault = false;
+    }
 }
