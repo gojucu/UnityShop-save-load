@@ -38,7 +38,6 @@ public class ItemUI : MonoBehaviour
 
 	public void SetItemAsPurchased()
 	{
-		//itemPurchaseButton.gameObject.SetActive(false);
 		itemPurchaseButton.interactable = false;
 		itemPurchaseButton.transform.GetChild(0).GetComponent<Text>().text = "OWNED";
 		itemButton.interactable = true;

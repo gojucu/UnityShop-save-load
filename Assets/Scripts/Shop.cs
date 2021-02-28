@@ -38,15 +38,15 @@ public class Shop : MonoBehaviour
 	GameObject g;
 	[SerializeField] Transform ShopScrollView;
 	[SerializeField] GameObject ShopPanel;
-	//Silinicek ?1
-	//Button buyBtn;
-	//Button itemBtn;
-	//Outline itemOutline;
-	//1
-	int newSelectedItemIndex = 0;
-	int previousSelectedItemIndex = 0;
+    //Silinicek ?1
+    //Button buyBtn;
+    //Button itemBtn;
+    //Outline itemOutline;
+    //1
+    //int newSelectedItemIndex = 0;
+    //int previousSelectedItemIndex = 0;
 
-	void Start ()
+    void Start ()
 	{
 		//Fill the shop's UI list with items
 		ListShopItems(0);
@@ -54,13 +54,6 @@ public class Shop : MonoBehaviour
 		//Set selected character in the playerDataManager .
 	
 
-		//Select UI item
-		for (int i = 0; i < itemDB.CategoriesCount; i++)
-		{
-			int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(i);
-			SetSelectedItems(categoriesSelectedItem);
-			SelectItemUI(categoriesSelectedItem);
-		}
 		//SelectItemUI(GameDataManager.GetSelectedItemsIndex());
 
 
@@ -90,6 +83,14 @@ public class Shop : MonoBehaviour
 					itemUI.OnItemPurchase(item.itemID, OnItemPurchased);
                 }
 			}
+		}
+
+		//Select UI item
+		for (int i = 0; i < itemDB.CategoriesCount; i++)
+		{
+			int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(i);
+			SetSelectedItems(categoriesSelectedItem);
+			SelectItemUI(categoriesSelectedItem);
 		}
 	}
 
@@ -126,7 +127,7 @@ public class Shop : MonoBehaviour
 		}
 
 		//previousSelectedItemIndex = newSelectedItemIndex;
-		newSelectedItemIndex = itemIndex;
+		//newSelectedItemIndex = itemIndex;
 
 		//ItemUI prevUiItem = GetItemUI(previousSelectedItemIndex);
 		//ItemUI newUiItem = GetItemUI(newSelectedItemIndex);
@@ -164,11 +165,23 @@ public class Shop : MonoBehaviour
 			//Update DB's Data
 			itemDB.PurchaseItem(itemIndex);
 
+			//change itemUI
+			ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin proplemi ne çöz
+			//var d = FindObjectsOfType<ItemUI>();
+			//foreach (ItemUI itemUI in d)
+			//{
+			//	itemUI.SetItemAsPurchased();
+			//	itemUI.OnItemSelect(item.itemID, OnItemSelected);
+			//}
+
 			//Add purchased item to Shop Data
 			GameDataManager.AddPurchasedCharacter(itemIndex);
 
 			//change UI text: coins
 			Game.Instance.UpdateAllCoinsUIText();
+
+
+
 		}
         else
         {

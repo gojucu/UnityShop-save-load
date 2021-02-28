@@ -26,6 +26,7 @@ public static class GameDataManager
     static CharactersShopData charactersShopData = new CharactersShopData();
 
     static SettedItems settedItems;// Seçili malzemeler bunlar gibi olucak Çiçek,masa
+
     //static ShopItemDatabase itemDB;
     static GameDataManager()
     {
