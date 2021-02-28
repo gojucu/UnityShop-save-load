@@ -9,6 +9,7 @@ public class ItemUI : MonoBehaviour
 	[SerializeField] Color itemSelectedColor;
 
 	[Space(20f)]
+	[SerializeField] int itemID;
 	[SerializeField] Sprite itemImage;
 	[SerializeField] Button itemPurchaseButton;
 	[SerializeField] Text ItemPriceText;
@@ -21,6 +22,14 @@ public class ItemUI : MonoBehaviour
 	public void SetItemImage(Sprite sprite)
 	{
 		itemImage = sprite;
+	}
+	public void SetItemID(int id)
+	{
+		itemID = id;
+	}
+	public int GetItemID()
+	{
+		return itemID;
 	}
 	public void SetItemPrice(int price)
 	{

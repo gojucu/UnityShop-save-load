@@ -16,8 +16,7 @@ public class PlayerData
 {
     public int coins = 1000;
     public List<int> selectedCharacterIndex = new List<int>();
-    public ShopItem selectedTable;
-    public ShopItem selectedPlant;
+    public SettedItems setted;
 }
 
 
@@ -26,7 +25,7 @@ public static class GameDataManager
     static PlayerData playerData = new PlayerData();
     static CharactersShopData charactersShopData = new CharactersShopData();
 
-    static List<ShopItem> selectedItem = new List<ShopItem>();// Seçili malzemeler bunlar gibi olucak Çiçek,masa
+    static SettedItems settedItems;// Seçili malzemeler bunlar gibi olucak Çiçek,masa
     //static ShopItemDatabase itemDB;
     static GameDataManager()
     {
@@ -39,16 +38,26 @@ public static class GameDataManager
     }
 
     //Player Data Methods -----------------------------------------------------------------------------
-    public static ShopItem GetSelectedItems()
+    public static SettedItems GetSelectedItems()
     {
-        return selectedItem[0];//0?
+        return settedItems;
     }
      
     public static void SetSelectedItem(ShopItem item, int index)
     {
         //ItemCategories cat = item.category; int yap
-        
-        selectedItem.Add(item);
+        switch (item.categoryID)
+        {
+            case 0:
+                settedItems.TableChairID = index;//geçici olarak index kullan olmaz ise shop itema id ekle
+                break;
+            case 1:
+                settedItems.PlantID = index;
+                break;
+
+            default:
+                break;
+        }
 
         playerData.selectedCharacterIndex.Insert(item.categoryID,index);
         //SavePlayerData();

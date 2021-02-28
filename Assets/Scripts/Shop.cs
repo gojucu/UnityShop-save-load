@@ -55,7 +55,7 @@ public class Shop : MonoBehaviour
 	
 
 		//Select UI item
-		for (int i = 0; i < itemDB.CategorisCount; i++)
+		for (int i = 0; i < itemDB.CategoriesCount; i++)
 		{
 			int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(i);
 			SetSelectedItems(categoriesSelectedItem);
@@ -78,15 +78,16 @@ public class Shop : MonoBehaviour
 				ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
 				itemUI.SetItemImage(item.image);
 				itemUI.SetItemPrice(item.price);
+				itemUI.SetItemID(item.itemID);
 
 				if (item.isPurchased)
                 {
 					itemUI.SetItemAsPurchased();
-					itemUI.OnItemSelect(i, OnItemSelected);
+					itemUI.OnItemSelect(item.itemID, OnItemSelected);
                 }
                 else
                 {
-					itemUI.OnItemPurchase(i, OnItemPurchased);
+					itemUI.OnItemPurchase(item.itemID, OnItemPurchased);
                 }
 			}
 		}
@@ -114,29 +115,36 @@ public class Shop : MonoBehaviour
 	void SelectItemUI(int itemIndex)
 	{
 		ShopItem item = itemDB.GetShopItem(itemIndex);
-		for(int i = 0; i< itemDB.ItemsCount; i++)
+		var d = FindObjectsOfType<ItemUI>();
+		foreach (ItemUI itemUI in d)
         {
-			if (item.categoryID == itemDB.items[i].categoryID)
-			{
-				ItemUI itemUIs = GetItemUI(i);
-
-				itemUIs.DeselectItem();
-			}
+			//if (item.categoryID == i)
+			//{
+			//	ItemUI itemUIs = itemUI;
+			itemUI.DeselectItem();
+			//}
 		}
 
 		//previousSelectedItemIndex = newSelectedItemIndex;
 		newSelectedItemIndex = itemIndex;
 
 		//ItemUI prevUiItem = GetItemUI(previousSelectedItemIndex);
-		ItemUI newUiItem = GetItemUI(newSelectedItemIndex);
-
-		newUiItem.SelectItem();
-
+		//ItemUI newUiItem = GetItemUI(newSelectedItemIndex);
+		ItemUI newUiItem=null;
+		
+		foreach (ItemUI itemUI in d)
+		{
+			if (itemUI.GetComponent<ItemUI>().GetItemID() == itemDB.items[itemIndex].itemID)
+			{
+				newUiItem = itemUI;
+				newUiItem.SelectItem();
+			}
+		}
 	}
-	ItemUI GetItemUI(int index)
-    {
-		return ShopScrollView.GetChild(index).GetComponent<ItemUI>();
-    }
+	//ItemUI GetItemUI(int index)//Buraya item ın id ini yollamaya çalış
+	//{
+	//	return ShopScrollView.GetChild(index).GetComponent<ItemUI>();
+	//}
 	void ResetShopList()
     {
 		foreach(Transform child in ShopScrollView)

@@ -5,20 +5,24 @@ public class ShopItemDatabase : ScriptableObject
 {
 
     public ShopItem[] items;
-    public Table[] tables;
+    public SettedItems settedItems;
     public ItemCategories[] categories;
 
     public int ItemsCount
     {
         get { return items.Length; }
     }
-    public int CategorisCount
+    public int CategoriesCount
     {
         get { return categories.Length; }
     }
     public ShopItem GetShopItem(int index)
     {
         return items[index];
+    }
+    public SettedItems GetSettedItems()
+    {
+        return settedItems;
     }
     public void PurchaseItem(int index)
     {

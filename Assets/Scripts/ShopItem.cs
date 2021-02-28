@@ -3,6 +3,7 @@
 [System.Serializable]
 public struct ShopItem
 {
+
     public int itemID;
     public int categoryID;
     public Sprite image;
@@ -13,14 +14,9 @@ public struct ShopItem
 
 }
 [System.Serializable]
-public struct Table
+public struct SettedItems
 {
-    public int itemID;
-    public int categoryID;
-    public Sprite image;
-    public string name;
-    public int price;
-
-    public bool isPurchased;
-
+    public int TableChairID;
+    public int PlantID;
 }
+
