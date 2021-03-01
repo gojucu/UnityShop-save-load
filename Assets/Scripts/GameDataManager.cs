@@ -22,7 +22,7 @@ public class PlayerData
     public int coins = 1000;
     public List<int> selectedCharacterIndex = new List<int>();
     public SelectedItems selectedItems;
-    public ItemCategories[] itemCats=new ItemCategories[10];//Bu 5 i elinle manuel ayarlamak zorunda olabilirsin ****
+    public ItemCategories[] itemCats=new ItemCategories[10];//Bu 10 u elinle manuel ayarlamak zorunda olabilirsin ****
     
 
 }
@@ -55,24 +55,11 @@ public static class GameDataManager
 
     public static void SetSelectedItem(int itemID,int catID)
     {
-        //ItemCategories cat = item.category; int yap
         playerData.itemCats[catID].selectedItemID = itemID;
-        //*Deneme önceki44
-        //playerData.selectedItems.TableChairID = item.TableChairID;//geçici olarak index kullan olmaz ise shop itema id ekle
-        //
-        //playerData.selectedItems.PlantID = item.PlantID;
-        //*Deneme önceki44
-        // playerData.selectedCharacterIndex.Insert(item.categoryID,index);Buna gerek var mı ?
         //SavePlayerData();
     }
-    //public static void SetSelectedTable(int i)
-    //{
-    //    playerData.selectedItems.TableChairID = i;
-    //}
-    //public static void SetSelectedPlant(int i)
-    //{
-    //    playerData.selectedItems.PlantID = i;
-    //}
+
+
 
     //public static int GetSelectedItemsIndex()//SelectedItems mı kullanıyorum bunun yerine ?
     //{
@@ -125,16 +112,6 @@ public static class GameDataManager
         charactersShopData.purchasedCharactersIndexes.Add(characterIndex);
         //SaveCharactersShoprData();
     }
-    //public static void AddPurchasedTable(int itemIndex)
-    //{
-    //    charactersShopData.purchasedTableIndexes.Add(itemIndex);
-    //    //SaveCharactersShoprData();
-    //}
-    //public static void AddPurchasedPlant(int itemIndex)
-    //{
-    //    charactersShopData.purchasedPlantIndexes.Add(itemIndex);
-    //    //SaveCharactersShoprData();
-    //}
 
     public static List<int> GetAllPurchasedCharacter()
     {

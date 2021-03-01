@@ -39,13 +39,7 @@ public class Shop : MonoBehaviour
 	//GameObject g;
 	[SerializeField] Transform ShopScrollView;
 	[SerializeField] GameObject ShopPanel;
-    //Silinicek ?1
-    //Button buyBtn;
-    //Button itemBtn;
-    //Outline itemOutline;
-    //1
-    //int newSelectedItemIndex = 0;
-    //int previousSelectedItemIndex = 0;
+
 
     void Start ()
 	{
@@ -92,12 +86,10 @@ public class Shop : MonoBehaviour
 		}
 		//SelectedItems selected = GameDataManager.GetSelectedItems();Önceki Deneme bunun yerine alttakini yazdın
 		int selectedItemID = GameDataManager.GetSelectedItemIndex(catID);
-
+		//Set selected items in DataManager
 		SetSelectedItems(selectedItemID, catID);
-		SelectItemUI(selectedItemID, catID);
 		//Select UI item
-		//int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex();
-
+		SelectItemUI(selectedItemID, catID);
 	}
 
     void SetSelectedItems(int selectedItemID,int categoryID)
@@ -105,7 +97,7 @@ public class Shop : MonoBehaviour
         //Get saved index
         //int index = GameDataManager.GetSelectedItemsIndex();
 
-			GameDataManager.SetSelectedItem(selectedItemID, categoryID);
+		GameDataManager.SetSelectedItem(selectedItemID, categoryID);
 
         //Set selected character
         //GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
@@ -144,7 +136,7 @@ public class Shop : MonoBehaviour
             newUiItem.SelectItem();
         }
 	}
-	//ItemUI GetItemUI(int index)//Buraya item ın id ini yollamaya çalış
+	//ItemUI GetItemUI(int index)//Buraya item ın id ini yollamaya çalış //Bunu halla kullanıyor muyum ? Üsttekinde hallediyorum bunu galiba
 	//{
 	//	return ShopScrollView.GetChild(index).GetComponent<ItemUI>();
 	//}
@@ -156,7 +148,7 @@ public class Shop : MonoBehaviour
 		}
     }
 
-	void OnItemPurchased (int itemID,int catID)//buna bide index?**gerek kalmadı
+	void OnItemPurchased (int itemID,int catID)
 	{
 		int price = itemDB.items.Where(x => x.itemID == itemID && x.categoryID == catID).FirstOrDefault().price;
 
@@ -169,7 +161,7 @@ public class Shop : MonoBehaviour
 			itemDB.PurchaseItem(itemID,catID);
 
 			//change itemUI
-			//ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin proplemi ne çöz
+			//ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin problemi***** ne çöz PRoblem ne **** çözüldümü yoksa ?
 			var d = FindObjectsOfType<ItemUI>();
             foreach (ItemUI itemUI in from ItemUI itemUI in d
                                    where itemUI.GetItemID() == itemID
@@ -188,12 +180,8 @@ public class Shop : MonoBehaviour
 					GameDataManager.AddPurchasedCharacter(i);//Burdan itemDB.items daki itemin indexini yolluyor
 				}
 			}
-
 			//change UI text: coins
 			Game.Instance.UpdateAllCoinsUIText();
-
-
-
 		}
         else
         {

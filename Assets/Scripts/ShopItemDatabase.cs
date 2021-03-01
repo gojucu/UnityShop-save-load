@@ -6,27 +6,15 @@ public class ShopItemDatabase : ScriptableObject
 
     public ShopItem[] items;
     public ShopItem tempItem;
-    //Önceki DENEME3**
-    //public TableChair[] tableChairs;
-    //public Plants[] plants;
-    //Önceki DENEME3**
 
     public SelectedItems selectedItems;
     public ItemCategories[] categories;
 
     //Item Counts
-    public int ItemsCount
+    public int ItemsCount// Bunu kullanıcakmısın ****
     {
         get { return items.Length; }
     }
-    //public int TablesCount
-    //{
-    //    get { return tableChairs.Length; }
-    //}
-    //public int PlantCount
-    //{
-    //    get { return plants.Length; }
-    //}
 
     public int CategoriesCount
     {
@@ -45,18 +33,8 @@ public class ShopItemDatabase : ScriptableObject
         }
         return tempItem;
     }
-    //public TableChair GetTableItem(int index)
-    //{
-    //    return tableChairs[index];
-    //}
-    //public Plants GetPlantItem(int index)
-    //{
-    //    return plants[index];
-    //}
 
-
-
-    //public SelectedItems GetSettedItems()
+    //public SelectedItems GetSettedItems() Selected Items muhabbetini kaldırdın galiba kontrol et*****
     //{
     //    return selectedItems;
     //}
@@ -71,11 +49,9 @@ public class ShopItemDatabase : ScriptableObject
             ShopItem shopItem1 = items[i];
             if (shopItem1.itemID == id && shopItem1.categoryID == catID)
             {
-                //shopItem1.isPurchased = true;
                 items[i].isPurchased = true;
             }
         }
-        //items[index].isPurchased = true;
     }
 
 }
