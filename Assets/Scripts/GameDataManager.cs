@@ -7,6 +7,9 @@ using System.Runtime.Serialization.Formatters.Binary;
 public class CharactersShopData
 {
     public List<int> purchasedCharactersIndexes = new List<int>();
+    public List<int> purchasedTableIndexes = new List<int>();
+    public List<int> purchasedPlantIndexes = new List<int>();
+
     public int categoryCount;
 
     public List<int> defaultBrokensIndexes = new List<int>();
@@ -18,7 +21,7 @@ public class PlayerData
 {
     public int coins = 1000;
     public List<int> selectedCharacterIndex = new List<int>();
-    public SettedItems setted;
+    public SelectedItems selectedItems;
     
 
 }
@@ -29,57 +32,48 @@ public static class GameDataManager
     static PlayerData playerData = new PlayerData();
     static CharactersShopData charactersShopData = new CharactersShopData();
 
-    static SettedItems settedItems;// Seçili malzemeler bunlar gibi olucak Çiçek,masa
+    //static SelectedItems selectedItems;// Seçili malzemeler bunlar gibi olucak Çiçek,masa
 
     //static ShopItemDatabase itemDB;
     static GameDataManager()
     {
-
-
         //LoadPlayerData();
         //LoadCharactersShopData();
     }
 
     //Player Data Methods -----------------------------------------------------------------------------
-    public static SettedItems GetSelectedItems()
+    public static SelectedItems GetSelectedItems()
     {
-        return settedItems;
+        return playerData.selectedItems;
     }
      
-    public static void SetSelectedItem(ShopItem item, int index)
+    public static void SetSelectedItem(SelectedItems item)
     {
         //ItemCategories cat = item.category; int yap
-        switch (item.categoryID)
-        {
-            case 0:
-                settedItems.TableChairID = index;//geçici olarak index kullan olmaz ise shop itema id ekle
-                break;
-            case 1:
-                settedItems.PlantID = index;
-                break;
+ 
+                playerData.selectedItems.TableChairID = item.TableChairID;//geçici olarak index kullan olmaz ise shop itema id ekle
 
-            default:
-                break;
-        }
+                playerData.selectedItems.PlantID = item.PlantID;
 
-        playerData.selectedCharacterIndex.Insert(item.categoryID,index);
+       // playerData.selectedCharacterIndex.Insert(item.categoryID,index);Buna gerek var mı ?
         //SavePlayerData();
+    }
+    public static void SetSelectedTable(int i)
+    {
+        playerData.selectedItems.TableChairID = i;
+    }
+    public static void SetSelectedPlant(int i)
+    {
+        playerData.selectedItems.PlantID = i;
+    }
 
-    }
-    public static void SetDefaults(ShopItem item)
-    {
+    //public static int GetSelectedItemsIndex()//SelectedItems mı kullanıyorum bunun yerine ?
+    //{
+    //    return playerData.selectedItems.TableChairID;
+    //}
 
-        charactersShopData.defaultBrokensIndexes.Insert(item.categoryID, item.itemID);
-    }
-    public static int GetDefaultValues(int i)
-    {
-        return charactersShopData.defaultBrokensIndexes[i];
-    }
-    public static int GetSelectedItemsIndex(int i)
-    {
-        return playerData.selectedCharacterIndex[i];
-    }
-    public static int GetSelectedItemsCount()
+
+    public static int GetSelectedItemsCount()//Bune 
     {
         return playerData.selectedCharacterIndex.Count;
     }
@@ -122,6 +116,16 @@ public static class GameDataManager
     public static void AddPurchasedCharacter(int characterIndex)
     {
         charactersShopData.purchasedCharactersIndexes.Add(characterIndex);
+        //SaveCharactersShoprData();
+    }
+    public static void AddPurchasedTable(int itemIndex)
+    {
+        charactersShopData.purchasedTableIndexes.Add(itemIndex);
+        //SaveCharactersShoprData();
+    }
+    public static void AddPurchasedPlant(int itemIndex)
+    {
+        charactersShopData.purchasedPlantIndexes.Add(itemIndex);
         //SaveCharactersShoprData();
     }
 

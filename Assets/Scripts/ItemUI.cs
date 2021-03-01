@@ -44,18 +44,18 @@ public class ItemUI : MonoBehaviour
 
 		//itemImage = itemNotSelectedColor;
 	}
-	public void OnItemPurchase(int itemIndex, UnityAction<int> action)
+	public void OnItemPurchase(int itemIndex,int catID, UnityAction<int,int> action)
 	{
 		itemPurchaseButton.onClick.RemoveAllListeners();
-		itemPurchaseButton.onClick.AddListener(() => action.Invoke(itemIndex));
+		itemPurchaseButton.onClick.AddListener(() => action.Invoke(itemIndex, catID));
 	}
 
-	public void OnItemSelect(int itemIndex, UnityAction<int> action)
+	public void OnItemSelect(int itemIndex,int catID, UnityAction<int,int> action)
 	{
 		itemButton.interactable = true;
 
 		itemButton.onClick.RemoveAllListeners();
-		itemButton.onClick.AddListener(() => action.Invoke(itemIndex));
+		itemButton.onClick.AddListener(() => action.Invoke(itemIndex,catID));
 	}
 
 	public void SelectItem()

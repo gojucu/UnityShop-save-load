@@ -52,106 +52,120 @@ public class Shop : MonoBehaviour
 		//Fill the shop's UI list with items
 		ListShopItems(0);
 
-
-
 		//Set selected character in the playerDataManager .
 	
-
 		//SelectItemUI(GameDataManager.GetSelectedItemsIndex());
-
 
 	}
 	public void ListShopItems(int index)
     {
-		ResetShopList();
+		ResetShopList();//Bu hala lazımmı ?
+		int len;
+        if (index == 0)
+        {
+			len = itemDB.TablesCount;
+		}else
+        {
+			len = itemDB.PlantCount;
+		}
 
-		int len = itemDB.ItemsCount;
 		for (int i = 0; i < len; i++)
 		{
-			ShopItem item = itemDB.GetShopItem(i);
-			
-			if (item.categoryID == index)
-			{
-				if (item.isDefault == true)
-				{
-					GameDataManager.SetDefaults(item);
-					//if (GameDataManager.GetSelectedItemsCount() == 0)
-					//{
-					//	Debug.Log(GameDataManager.GetSelectedItemsCount());
-					//	int dd = GameDataManager.GetSelectedItemsIndex(index);
-					//	ShopItem sItem = itemDB.GetShopItem(dd);
-					//	if (sItem.isDefault != false)
-					//	{
-					//if(GameDataManager.GetDefaultValues(item.categoryID)!=true)
-							SetSelectedItems(item.itemID);
-					//	}
-					//}
-				}
 
-				ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
-				itemUI.SetItemImage(item.image);
-				itemUI.SetItemPrice(item.price);
-				itemUI.SetItemID(item.itemID);
+            switch (index)
+            {
+                case 0://Table&Chair
+                    {
+                        TableChair item = itemDB.GetTableItem(i);
 
-				if (item.isPurchased)
-                {
-					itemUI.SetItemAsPurchased();
-					itemUI.OnItemSelect(item.itemID, OnItemSelected);
-                }
-                else
-                {
-					itemUI.OnItemPurchase(item.itemID, OnItemPurchased);
-                }
-			}
-		}
+                        ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
+                        itemUI.SetItemImage(item.image);
+                        itemUI.SetItemPrice(item.price);
+                        itemUI.SetItemID(item.itemID);
+
+                        if (item.isPurchased)
+                        {
+                            itemUI.SetItemAsPurchased();
+                            itemUI.OnItemSelect(item.itemID,index, OnItemSelected);
+                        }
+                        else
+                        {
+                            itemUI.OnItemPurchase(item.itemID,index, OnItemPurchased);
+                        }
+						SelectedItems selected = GameDataManager.GetSelectedItems();
+
+						SetSelectedItems(selected, index);
+						SelectItemUI(selected.TableChairID);
+						break;
+                    }
+
+                default://Plant
+                    {
+                        Plants item = itemDB.GetPlantItem(i);
+                        ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
+                        itemUI.SetItemImage(item.image);
+                        itemUI.SetItemPrice(item.price);
+                        itemUI.SetItemID(item.itemID);
+
+                        if (item.isPurchased)
+                        {
+                            itemUI.SetItemAsPurchased();
+                            itemUI.OnItemSelect(item.itemID,index, OnItemSelected);
+                        }
+                        else
+                        {
+                            itemUI.OnItemPurchase(item.itemID,index, OnItemPurchased);
+                        }
+						SelectedItems selected = GameDataManager.GetSelectedItems();
+
+						SetSelectedItems(selected, index);
+						SelectItemUI(selected.PlantID);
+						break;
+                    }
+            }
+
+        }
+
 		//Select UI item
-		int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex(index);
-		Debug.Log(categoriesSelectedItem+"Hata burada");
-		SetSelectedItems(categoriesSelectedItem);
-		SelectItemUI(categoriesSelectedItem);
+		//int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex();
+
 	}
 
-	void SetSelectedItems(int index)
+    void SetSelectedItems(SelectedItems selected,int category)
     {
         //Get saved index
         //int index = GameDataManager.GetSelectedItemsIndex();
 
+			GameDataManager.SetSelectedItem(selected);
+
         //Set selected character
-        GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
+        //GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
     }
 
-    private void MakeDefaultItemFalse(int index)
-    {
-        ShopItem item = itemDB.GetShopItem(index);
-        if (item.isDefault != true)
-        {
-			int len = itemDB.ItemsCount;
-			for (int i = 0; i < len; i++)
-			{
-                if (item.categoryID == i)
-				{
-					//GameDataManager.SetDefaults(item);
-					int defaultIndex=GameDataManager.GetDefaultValues(item.categoryID);
-					itemDB.BreakDefault(defaultIndex);
-					//item.isDefault = false;
-				}
-			}
-		}
-    }
 
-    void OnItemSelected(int i)
+    void OnItemSelected(int i,int catID)
     {
+		//Get selecteds
+		SelectedItems selected = GameDataManager.GetSelectedItems();
+
 		//Select item in the UI
 		SelectItemUI(i);
 
-		//Remove Default
-		MakeDefaultItemFalse(i);
+        if (catID == 0)
+        {
+			selected.TableChairID = i;
+        }
+        else
+        {
+			selected.PlantID = i;
+        }
 
 		//Save Data
-		GameDataManager.SetSelectedItem(itemDB.GetShopItem(i), i);
+		GameDataManager.SetSelectedItem(selected);
 		Debug.Log("Selected"+i);
 	}
-	void SelectItemUI(int itemIndex)
+
+	void SelectItemUI(int selected)
 	{
 		//ShopItem item = itemDB.GetShopItem(itemIndex);
 		var d = FindObjectsOfType<ItemUI>();
@@ -161,9 +175,19 @@ public class Shop : MonoBehaviour
 		}
 
         ItemUI newUiItem = null;
+
+		//int id;
+		//if (cat == 0)//table
+  //      {
+		//	id = selected.TableChairID;
+  //      }
+  //      else//Plant
+  //      {
+		//	id = selected.PlantID;
+		//}
         foreach (ItemUI itemUI in from ItemUI itemUI in d
-                               where itemUI.GetComponent<ItemUI>().GetItemID() == itemDB.items[itemIndex].itemID
-                               select itemUI)
+                               where itemUI.GetComponent<ItemUI>().GetItemID() == selected
+								  select itemUI)
         {
             newUiItem = itemUI;
             newUiItem.SelectItem();
@@ -181,13 +205,25 @@ public class Shop : MonoBehaviour
 		}
     }
 
-	void OnItemPurchased (int itemIndex)
+	void OnItemPurchased (int itemIndex,int catID)
 	{
-		ShopItem item = itemDB.GetShopItem(itemIndex);
-        if (GameDataManager.CanSpendCoins(item.price))
+		int price;
+
+        if (catID == 0)
+        {
+			TableChair item = itemDB.GetTableItem(itemIndex);
+			price = item.price;
+        }
+        else
+        {
+			Plants item = itemDB.GetPlantItem(itemIndex);
+			price = item.price;
+		}
+
+        if (GameDataManager.CanSpendCoins(price))
         {
 			//Proceed with the purchase operation
-			GameDataManager.SpendCoins(item.price);
+			GameDataManager.SpendCoins(price);
 
 			//Update DB's Data
 			itemDB.PurchaseItem(itemIndex);
