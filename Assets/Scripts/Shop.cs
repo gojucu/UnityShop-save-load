@@ -57,86 +57,55 @@ public class Shop : MonoBehaviour
 		//SelectItemUI(GameDataManager.GetSelectedItemsIndex());
 
 	}
-	public void ListShopItems(int index)
+	public void ListShopItems(int catID)
     {
+		//Loop throw save purchased items and make them as purchased in the Database array
+		for (int i = 0; i < GameDataManager.GetAllPurchasedCharacter().Count; i++)
+		{
+			int purchasedCharacterIndex = GameDataManager.GetPurchasedCharacter(i);
+			ShopItem shopItem = itemDB.items[i];
+			itemDB.PurchaseItem(shopItem.itemID,shopItem.categoryID);
+		}
+
 		ResetShopList();//Bu hala lazımmı ?
 		int len;
-        if (index == 0)
-        {
-			len = itemDB.TablesCount;
-		}else
-        {
-			len = itemDB.PlantCount;
-		}
+		len = itemDB.items.Where(x => x.categoryID == catID).Count();
 
 		for (int i = 0; i < len; i++)
 		{
+			ShopItem item = itemDB.GetShopItem(i,catID);
+			ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
+			itemUI.SetItemImage(item.image);
+			itemUI.SetItemPrice(item.price);
+			itemUI.SetItemID(item.itemID);
 
-            switch (index)
-            {
-                case 0://Table&Chair
-                    {
-                        TableChair item = itemDB.GetTableItem(i);
+			if (item.isPurchased)
+			{
+				itemUI.SetItemAsPurchased();
+				itemUI.OnItemSelect(item.itemID, catID, OnItemSelected);
+			}
+			else
+			{
+				itemUI.OnItemPurchase(item.itemID, catID, OnItemPurchased);
+			}
 
-                        ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
-                        itemUI.SetItemImage(item.image);
-                        itemUI.SetItemPrice(item.price);
-                        itemUI.SetItemID(item.itemID);
+		}
+		//SelectedItems selected = GameDataManager.GetSelectedItems();Önceki Deneme bunun yerine alttakini yazdın
+		int selectedItemID = GameDataManager.GetSelectedItemIndex(catID);
 
-                        if (item.isPurchased)
-                        {
-                            itemUI.SetItemAsPurchased();
-                            itemUI.OnItemSelect(item.itemID,index, OnItemSelected);
-                        }
-                        else
-                        {
-                            itemUI.OnItemPurchase(item.itemID,index, OnItemPurchased);
-                        }
-						SelectedItems selected = GameDataManager.GetSelectedItems();
-
-						SetSelectedItems(selected, index);
-						SelectItemUI(selected.TableChairID);
-						break;
-                    }
-
-                default://Plant
-                    {
-                        Plants item = itemDB.GetPlantItem(i);
-                        ItemUI itemUI = Instantiate(ItemTemplate, ShopScrollView).GetComponent<ItemUI>();
-                        itemUI.SetItemImage(item.image);
-                        itemUI.SetItemPrice(item.price);
-                        itemUI.SetItemID(item.itemID);
-
-                        if (item.isPurchased)
-                        {
-                            itemUI.SetItemAsPurchased();
-                            itemUI.OnItemSelect(item.itemID,index, OnItemSelected);
-                        }
-                        else
-                        {
-                            itemUI.OnItemPurchase(item.itemID,index, OnItemPurchased);
-                        }
-						SelectedItems selected = GameDataManager.GetSelectedItems();
-
-						SetSelectedItems(selected, index);
-						SelectItemUI(selected.PlantID);
-						break;
-                    }
-            }
-
-        }
-
+		SetSelectedItems(selectedItemID, catID);
+		SelectItemUI(selectedItemID, catID);
 		//Select UI item
 		//int categoriesSelectedItem = GameDataManager.GetSelectedItemsIndex();
 
 	}
 
-    void SetSelectedItems(SelectedItems selected,int category)
+    void SetSelectedItems(int selectedItemID,int categoryID)
     {
         //Get saved index
         //int index = GameDataManager.GetSelectedItemsIndex();
 
-			GameDataManager.SetSelectedItem(selected);
+			GameDataManager.SetSelectedItem(selectedItemID, categoryID);
 
         //Set selected character
         //GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
@@ -146,26 +115,17 @@ public class Shop : MonoBehaviour
     void OnItemSelected(int i,int catID)
     {
 		//Get selecteds
-		SelectedItems selected = GameDataManager.GetSelectedItems();
+		//SelectedItems selected = GameDataManager.GetSelectedItems();//** bu lazımmı hala burayada bak bi bittiyse başına yıldız koy
 
 		//Select item in the UI
-		SelectItemUI(i);
-
-        if (catID == 0)
-        {
-			selected.TableChairID = i;
-        }
-        else
-        {
-			selected.PlantID = i;
-        }
+		SelectItemUI(i,catID);
 
 		//Save Data
-		GameDataManager.SetSelectedItem(selected);
-		Debug.Log("Selected"+i);
+		GameDataManager.SetSelectedItem(i,catID);
+		Debug.Log("Selected"+i+"from"+catID+"category");
 	}
 
-	void SelectItemUI(int selected)
+	void SelectItemUI(int selectedID,int catID)
 	{
 		//ShopItem item = itemDB.GetShopItem(itemIndex);
 		var d = FindObjectsOfType<ItemUI>();
@@ -176,17 +136,8 @@ public class Shop : MonoBehaviour
 
         ItemUI newUiItem = null;
 
-		//int id;
-		//if (cat == 0)//table
-  //      {
-		//	id = selected.TableChairID;
-  //      }
-  //      else//Plant
-  //      {
-		//	id = selected.PlantID;
-		//}
         foreach (ItemUI itemUI in from ItemUI itemUI in d
-                               where itemUI.GetComponent<ItemUI>().GetItemID() == selected
+                               where itemUI.GetComponent<ItemUI>().GetItemID() == selectedID
 								  select itemUI)
         {
             newUiItem = itemUI;
@@ -205,20 +156,9 @@ public class Shop : MonoBehaviour
 		}
     }
 
-	void OnItemPurchased (int itemIndex,int catID)
+	void OnItemPurchased (int itemID,int catID)//buna bide index?**gerek kalmadı
 	{
-		int price;
-
-        if (catID == 0)
-        {
-			TableChair item = itemDB.GetTableItem(itemIndex);
-			price = item.price;
-        }
-        else
-        {
-			Plants item = itemDB.GetPlantItem(itemIndex);
-			price = item.price;
-		}
+		int price = itemDB.items.Where(x => x.itemID == itemID && x.categoryID == catID).FirstOrDefault().price;
 
         if (GameDataManager.CanSpendCoins(price))
         {
@@ -226,21 +166,28 @@ public class Shop : MonoBehaviour
 			GameDataManager.SpendCoins(price);
 
 			//Update DB's Data
-			itemDB.PurchaseItem(itemIndex);
+			itemDB.PurchaseItem(itemID,catID);
 
 			//change itemUI
 			//ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin proplemi ne çöz
 			var d = FindObjectsOfType<ItemUI>();
             foreach (ItemUI itemUI in from ItemUI itemUI in d
-                                   where itemUI.GetItemID() == itemIndex
-                                   select itemUI)
+                                   where itemUI.GetItemID() == itemID
+									  select itemUI)
             {
                 itemUI.SetItemAsPurchased();
-                itemUI.OnItemSelect(item.itemID, OnItemSelected);
+                itemUI.OnItemSelect(itemID, catID, OnItemSelected);
             }
 
             //Add purchased item to Shop Data
-            GameDataManager.AddPurchasedCharacter(itemIndex);
+			for(int i =0; i < itemDB.items.Length;i++)
+            {
+				ShopItem item = itemDB.GetShopItem(itemID, catID);
+                if (item.itemID == itemID && item.categoryID == catID)
+                {
+					GameDataManager.AddPurchasedCharacter(i);//Burdan itemDB.items daki itemin indexini yolluyor
+				}
+			}
 
 			//change UI text: coins
 			Game.Instance.UpdateAllCoinsUIText();

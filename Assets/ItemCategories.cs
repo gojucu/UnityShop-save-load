@@ -5,6 +5,6 @@ public struct ItemCategories
 {
     public int id;
     public string name;
-    public bool defaultBroken;
+    public int selectedItemID;
 }
 
