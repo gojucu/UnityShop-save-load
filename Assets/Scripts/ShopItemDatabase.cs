@@ -7,7 +7,7 @@ public class ShopItemDatabase : ScriptableObject
     public ShopItem[] items;
     public ShopItem tempItem;
 
-    public SelectedItems selectedItems;
+    //public SelectedItems selectedItems;
     public ItemCategories[] categories;
 
     //Item Counts
@@ -34,15 +34,11 @@ public class ShopItemDatabase : ScriptableObject
         return tempItem;
     }
 
-    //public SelectedItems GetSettedItems() Selected Items muhabbetini kaldırdın galiba kontrol et*****
-    //{
-    //    return selectedItems;
-    //}
     public int GetSelectedItemsID(int catID)// Bu ne ?
     {
         return categories[catID].selectedItemID;
     }
-    public void PurchaseItem(int id, int catID)//Bunudamı her kategori için yapıcam öyle gibi unutma** Gerek yok çözüldü gibi ?
+    public void PurchaseItem(int id, int catID)
     {
         for (int i = 0; i < items.Length; i++)
         {

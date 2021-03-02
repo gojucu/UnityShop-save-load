@@ -20,23 +20,13 @@ public class Shop : MonoBehaviour
 
 	#endregion
 
-	//[System.Serializable] public class ShopItem
-	//{
-	//	public Sprite Image;
-	//	public int Price;
-	//	public bool IsPurchased = false;
-	//}
 
-	//[SerializeField] Transform ShopItemsContainer;
-
-	//public List<ShopItem> ShopItemsList;//Silinicek ?
 	[SerializeField] ShopItemDatabase itemDB;
 
 	[SerializeField] Animator NoCoinsAnim;
  
 
 	[SerializeField] GameObject ItemTemplate;
-	//GameObject g;
 	[SerializeField] Transform ShopScrollView;
 	[SerializeField] GameObject ShopPanel;
 
@@ -45,11 +35,6 @@ public class Shop : MonoBehaviour
 	{
 		//Fill the shop's UI list with items
 		ListShopItems(0);
-
-		//Set selected character in the playerDataManager .
-	
-		//SelectItemUI(GameDataManager.GetSelectedItemsIndex());
-
 	}
 	public void ListShopItems(int catID)
     {
@@ -61,7 +46,7 @@ public class Shop : MonoBehaviour
 			itemDB.PurchaseItem(shopItem.itemID,shopItem.categoryID);
 		}
 
-		ResetShopList();//Bu hala lazımmı ?
+		ResetShopList();//Bu hala lazımmı ?*** lazım gibi
 		int len;
 		len = itemDB.items.Where(x => x.categoryID == catID).Count();
 
@@ -84,7 +69,6 @@ public class Shop : MonoBehaviour
 			}
 
 		}
-		//SelectedItems selected = GameDataManager.GetSelectedItems();Önceki Deneme bunun yerine alttakini yazdın
 		int selectedItemID = GameDataManager.GetSelectedItemIndex(catID);
 		//Set selected items in DataManager
 		SetSelectedItems(selectedItemID, catID);
@@ -94,21 +78,13 @@ public class Shop : MonoBehaviour
 
     void SetSelectedItems(int selectedItemID,int categoryID)
     {
-        //Get saved index
-        //int index = GameDataManager.GetSelectedItemsIndex();
-
+		//Set selected character
 		GameDataManager.SetSelectedItem(selectedItemID, categoryID);
-
-        //Set selected character
-        //GameDataManager.SetSelectedItem(itemDB.GetShopItem(index), index);
     }
 
 
     void OnItemSelected(int i,int catID)
     {
-		//Get selecteds
-		//SelectedItems selected = GameDataManager.GetSelectedItems();//** bu lazımmı hala burayada bak bi bittiyse başına yıldız koy
-
 		//Select item in the UI
 		SelectItemUI(i,catID);
 
@@ -117,9 +93,8 @@ public class Shop : MonoBehaviour
 		Debug.Log("Selected"+i+"from"+catID+"category");
 	}
 
-	void SelectItemUI(int selectedID,int catID)
+	void SelectItemUI(int selectedID,int catID)//Cat id kullanılmıyor gözüküyor temizle
 	{
-		//ShopItem item = itemDB.GetShopItem(itemIndex);
 		var d = FindObjectsOfType<ItemUI>();
 		foreach (ItemUI itemUI in d)
         {
@@ -136,10 +111,7 @@ public class Shop : MonoBehaviour
             newUiItem.SelectItem();
         }
 	}
-	//ItemUI GetItemUI(int index)//Buraya item ın id ini yollamaya çalış //Bunu halla kullanıyor muyum ? Üsttekinde hallediyorum bunu galiba
-	//{
-	//	return ShopScrollView.GetChild(index).GetComponent<ItemUI>();
-	//}
+
 	void ResetShopList()
     {
 		foreach(Transform child in ShopScrollView)
@@ -161,7 +133,6 @@ public class Shop : MonoBehaviour
 			itemDB.PurchaseItem(itemID,catID);
 
 			//change itemUI
-			//ListShopItems(item.categoryID);// bu hoşuma gitmedi aşağıdakinin problemi***** ne çöz PRoblem ne **** çözüldümü yoksa ?
 			var d = FindObjectsOfType<ItemUI>();
             foreach (ItemUI itemUI in from ItemUI itemUI in d
                                    where itemUI.GetItemID() == itemID
@@ -188,7 +159,6 @@ public class Shop : MonoBehaviour
 			NoCoinsAnim.SetTrigger("NoCoins");
 			Debug.Log("You don't have enough coins!!");
 		}
-
 	}
 
 	/*---------------------Open & Close shop--------------------------*/ 

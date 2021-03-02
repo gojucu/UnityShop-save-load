@@ -14,12 +14,3 @@ public struct ShopItem
     public bool isPurchased;
 
 }
-
-
-[System.Serializable]
-public struct SelectedItems// Bu hala lazımmı ***????
-{
-    public int TableChairID;
-    public int PlantID;
-}
-
